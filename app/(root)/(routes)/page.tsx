@@ -1,0 +1,29 @@
+"use client"
+
+import Image from "next/image";
+import  {Button} from "../../../components/ui/button"
+import { UserButton } from "@clerk/nextjs";
+import Modal from "@/components/ui/modal";
+import { useStoreModal } from "@/hooks/use-store-modal";
+import { useEffect } from "react";
+
+const SetupPage = () => {
+
+  const onOpen = useStoreModal((state) => state.onOpen)
+  const isOpen = useStoreModal((state) => state.isOpen)
+
+  useEffect(() => {
+    if(!isOpen) {
+      onOpen()
+    }
+  }, [isOpen, onOpen])
+
+  
+  return (
+    <div className="font-black p-4 bg-indigo-500">
+      Root Page
+    </div>
+  )
+}
+
+export default SetupPage
