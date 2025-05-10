@@ -19,11 +19,7 @@ const SetupPage = () => {
   }, [isOpen, onOpen])
 
   
-  return (
-    <div className="font-black p-4 bg-indigo-500">
-      Root Page
-    </div>
-  )
+  return null
 }
 
 export default SetupPage
