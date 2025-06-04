@@ -8,22 +8,26 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   req: Request,
-  { params }: { params: { bannerId: string } }
+  { params }: { params: { productId: string } }
 ) {
   try {
-    if (!params.bannerId) {
-      return new NextResponse("Banner id dibutuhkan", { status: 400 });
+    if (!params.productId) {
+      return new NextResponse("Product id dibutuhkan", { status: 400 });
     }
 
-    const banner = await db.banner.findUnique({
+    const product = await db.product.findUnique({
       where: {
-        id: params.bannerId,
+        id: params.productId,
       },
+      include: {
+        images: true,
+        category: true,
+      }
     });
 
-    return NextResponse.json(banner);
+    return NextResponse.json(product);
   } catch (error) {
-    console.error("[BANNER_GET]", error);
+    console.error("[PRODUCT_GET]", error);
     return new NextResponse("Internal error", { status: 500 });
   }
 }
@@ -32,27 +36,42 @@ export async function GET(
 
 export async function PATCH(
   req: Request,
-  { params }: { params: { storeId: string; bannerId: string } }
+  { params }: { params: { storeId: string; productId: string } }
 ) {
   try {
     const { userId } = auth();
     const body = await req.json();
-    const { label, imageUrl } = body;
+    const {
+      name,
+      price,
+      categoryId,
+      images,
+      isFeatured,
+      isArchived,
+  } = body
 
     if (!userId) {
       return new NextResponse("Unauthenticated", { status: 401 });
     }
+    if (!userId) {
+      return new NextResponse("Unauthorized", {status: 401})
+  }
 
-    if (!label) {
-      return new NextResponse("Harus menginput label", { status: 400 });
-    }
+  if (!name) {
+      return new NextResponse("Nama perlu di input", {status: 400})
+  }
+  if (!images || !images.length) {
+      return new NextResponse("Image  perlu di input", {status: 400})
+  }
+  if (!price) {
+      return new NextResponse("Harga perlu di input", {status: 400})
+  }
+  if (!categoryId) {
+      return new NextResponse("Kategori perlu di input", {status: 400})
+  }
 
-    if (!imageUrl) {
-      return new NextResponse("Harus menginput imageUrl", { status: 400 });
-    }
-
-    if (!params.bannerId) {
-      return new NextResponse("Banner id dibutuhkan", { status: 400 });
+    if (!params.productId) {
+      return new NextResponse("Product id dibutuhkan", { status: 400 });
     }
 
     const storeByUserId = await db.store.findFirst({
@@ -66,19 +85,40 @@ export async function PATCH(
       return new NextResponse("Unauthorized", { status: 403 });
     }
 
-    const banner = await db.banner.update({
+    await db.product.update({
       where: {
-        id: params.bannerId,
+        id: params.productId,
       },
       data: {
-        label,
-        imageUrl,
+        name,
+        price,
+        isFeatured,
+        isArchived,
+        categoryId,
+        images: {
+          deleteMany: {}
+        },
       },
     });
 
-    return NextResponse.json(banner);
+    const product = await db.product.update({
+      where: {
+        id: params.productId
+      },
+      data: {
+        images: {
+          createMany: {
+            data: [
+              ...images.map((image: {url: string})=> image)
+            ]
+          }
+        }
+      }
+    })
+
+    return NextResponse.json(product);
   } catch (error) {
-    console.error("[BANNER_PATCH]", error);
+    console.error("[PRODUCT_PATCH]", error);
     return new NextResponse("Internal error", { status: 500 });
   }
 }
@@ -87,7 +127,7 @@ export async function PATCH(
 
 export async function DELETE(
   req: Request,
-  { params }: { params: { storeId: string; bannerId: string } }
+  { params }: { params: { storeId: string; productId: string } }
 ) {
   try {
     const { userId } = auth();
@@ -96,8 +136,8 @@ export async function DELETE(
       return new NextResponse("Unauthenticated", { status: 401 });
     }
 
-    if (!params.bannerId) {
-      return new NextResponse("Banner id dibutuhkan", { status: 400 });
+    if (!params.productId) {
+      return new NextResponse("Product id dibutuhkan", { status: 400 });
     }
 
     const storeByUserId = await db.store.findFirst({
@@ -111,15 +151,15 @@ export async function DELETE(
       return new NextResponse("Unauthorized", { status: 403 });
     }
 
-    const banner = await db.banner.delete({
+    const product = await db.product.deleteMany({
       where: {
-        id: params.bannerId,
+        id: params.productId,
       },
     });
 
-    return NextResponse.json(banner);
+    return NextResponse.json(product);
   } catch (error) {
-    console.error("[BANNER_DELETE]", error);
+    console.error("[PRODUCT_DELETE]", error);
     return new NextResponse("Internal error", { status: 500 });
   }
 }

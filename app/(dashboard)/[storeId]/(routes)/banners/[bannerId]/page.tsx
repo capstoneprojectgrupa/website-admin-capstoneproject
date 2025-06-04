@@ -10,9 +10,9 @@ const BannerPage = async({
         where: {
             id: params.bannerId
         },
-        orderBy: {
-            createdAt: 'desc'
-        }
+        // orderBy: {
+        //     createdAt: 'desc'
+        // }
     })
 
     return (

@@ -92,6 +92,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
             router.refresh();
 
 
+
             toast.success(toastMessage);
         } catch (error) {
             toast.error("Cek kembali data yang diinput")
@@ -107,6 +108,7 @@ export const ProductForm: React.FC<ProductFormProps> = ({
             router.refresh()
             router.push(`/${params.storeId}/products`)
             toast.success("Produk berhasil dihapus")
+            
         } catch (error) {
             toast.error("Cek kembali data dan koneksimu")
         } finally {

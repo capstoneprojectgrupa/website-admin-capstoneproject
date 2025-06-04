@@ -18,6 +18,9 @@ export async function GET(
       where: {
         id: params.categoryId,
       },
+      include: {
+        banner: true
+      },
     });
 
     return NextResponse.json(category);

@@ -3,7 +3,7 @@
 import axios from "axios"
 import toast from "react-hot-toast"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { BannerColumn } from "./columns"
+import { ProductColumn } from "./columns"
 import { Button } from "@/components/ui/button"
 import { Copy, Edit, MoreHorizontal, Trash, Trash2 } from "lucide-react"
 import { useParams, useRouter } from "next/navigation"
@@ -11,7 +11,7 @@ import { useState } from "react"
 import { AlertModal } from "@/components/modals/alert-modal"
 
 interface CellActionProps {
-    data: BannerColumn
+    data: ProductColumn
 }
 
 export const CellAction: React.FC<CellActionProps> = ({
@@ -24,15 +24,15 @@ export const CellAction: React.FC<CellActionProps> = ({
 
     const onCopy = (id: string) => {
             navigator.clipboard.writeText(id);
-            toast.success("Banner Id berhasil di copy");
+            toast.success("Product Id berhasil di copy");
         }
 
     const onDelete = async () => {
         try {
             setLoading(true);
-            await axios.delete(`/api/${params.storeId}/banners/${data.id}`);
-            router.push(`/${params.storeId}/banners`);
-            toast.success("Banner berhasil dihapus");
+            await axios.delete(`/api/${params.storeId}/products/${data.id}`);
+            router.push(`/${params.storeId}/products`);
+            toast.success("Product berhasil dihapus");
             router.refresh();
 
         } catch (error) {
@@ -65,7 +65,7 @@ export const CellAction: React.FC<CellActionProps> = ({
                     <Copy className="mr-2 h-4 w-4"/>
                     Copy Id
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={()=> router.push(`/${params.storeId}/banners/${data.id}`)}>
+                <DropdownMenuItem onClick={()=> router.push(`/${params.storeId}/products/${data.id}`)}>
                     <Edit className="mr-2 h-4 w-4"/>
                     Update
                 </DropdownMenuItem>
